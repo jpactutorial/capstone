@@ -134,8 +134,12 @@ src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
     <h1 class="h3 mb-3">Dashboard</h1>
     <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
     <script>
+<?php
+  $sql="SELECT SUM(CASE WHEN gender='Male' THEN 1 ELSE 0 END) as MaleCount, SUM(CASE WHEN gender='Female' THEN 1 ELSE 0 END) as FemaleCount  FROM `user` WHERE role='Student'";
+  $count=$jpac->SQLQuery($sql);
+?>
     var xValues = ["GIRLS", "BOYS"];
-    var yValues = [80,60];
+    var yValues = [<?= $count[0]['FemaleCount'] ?>,<?= $count[0]['MaleCount'] ?>];
     var barColors = [
         "#b91d47",
         "#2b5797",
@@ -162,8 +166,18 @@ src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
     <canvas id="gradeChart" style="width:100%;max-width:600px"></canvas>
 
     <script>
-    var xValues = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"];
-    var yValues = [150, 100, 70, 80, 115,209];
+<?php
+$sql="SELECT t0.classMasterId,t0.grade,(SELECT COUNT(*) FROM class WHERE classMasterId=t0.classMasterId) as TotalStudents FROM `classes_master_data` t0";
+$data=$jpac->SQLQuery($sql);
+$label=array();
+$studentCount=array();
+for($i=0;$i<count($data);$i++){
+  array_push($label,'"'.$data[$i]['grade'].'"');
+  array_push($studentCount,'"'.$data[$i]['TotalStudents'].'"');
+}
+?>
+    var xValues = [<?= implode(',',$label) ?>];
+    var yValues = [<?= implode(',',$studentCount) ?>];
     var barColors = ["red", "green","blue","orange","brown","violet"];
 
     new Chart("gradeChart", {

@@ -18,6 +18,7 @@ if($type == "addUsers"){
     if($password==""){
         $password="abcd1234";
     }
+    $dataInsert['gender']=$_REQUEST['gender'];
     $dataInsert['email']=$_REQUEST['email'];
     $dataInsert['lrn']=$_REQUEST['lrn'];
 	$dataInsert['username']=$_REQUEST['username'];
@@ -56,6 +57,7 @@ if($type == "editUsers"){
 	$dataUpdate['last_name']=$_REQUEST['last_name'];
 	$dataUpdate['role']=$_REQUEST['role'];
 	$dataUpdate['date_updated']=$dateTimeNow;
+	$dataUpdate['gender']=$_REQUEST['gender'];
 	$dataUpdate['status']=$_REQUEST['status'];
 	$id=$jpac->SQLUpdate('user',$dataUpdate," WHERE userId='".$_REQUEST['userId']."'");
 	if($id>0){
@@ -209,6 +211,17 @@ if($type == "editUsers"){
                                     <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Last Name" required>
                                 </div>
                             </div>
+                            
+                            <div class="mb-3 row">
+                                <label class="col-form-label col-sm-3 text-sm-left">Gender</label>
+                                <div class="col-sm-9">
+                                    <select class="form-select" id="gender" name="gender" value="" required>
+                                        <option></option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="mb-3 row">
                                 <label class="col-form-label col-sm-3 text-sm-left">Role</label>
                                 <div class="col-sm-9">
@@ -249,28 +262,28 @@ if($type == "editUsers"){
         <script>
             
 $("#form_users").submit(function(e) {
-e.preventDefault(); // avoid to execute the actual submit of the form.
-var form = $(this);
-var url = form.attr('action');
-$.ajax({
-type: "POST",
-url: window.location,
-data: new FormData(this), // Data sent to server, a set of key/value pairs (i.e. form fields and values)
-contentType: false, 
-cache: false, 
-processData:false,
-success: function(data)
-{
-if(data.includes("Success")){
-alert(data);
-window.location.reload();
-return;
-}
-alert(data); // show response from the php script.
-}
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+    var form = $(this);
+    var url = form.attr('action');
+    $.ajax({
+        type: "POST",
+        url: window.location,
+        data: new FormData(this), // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+        contentType: false, 
+        cache: false, 
+        processData:false,
+        success: function(data)
+        {
+        if(data.includes("Success")){
+        alert(data);
+        window.location.reload();
+        return;
+        }
+        alert(data); // show response from the php script.
+    }
+    });
 });
-});
-            function showModalUsers(action,id=0,email='',lrn='',username='',first_name='',middle_name='',last_name='',role='',status=''){
+            function showModalUsers(action,id=0,email='',lrn='',username='',first_name='',middle_name='',last_name='',role='',status='',gender=''){
                 $('#type').val(action);
                 $('#userId').val(id);
                 $('#email').val(email);
@@ -282,6 +295,12 @@ alert(data); // show response from the php script.
                 $('#last_name').val(last_name);
                 $('#role').val(role);
                 $('#status').val(status);
+                //$('#gender').val(gender);
+                if(gender=="Male"){
+                    document.getElementById("gender").options.selectedIndex=1;
+                }else{
+                    document.getElementById("gender").options.selectedIndex=2;
+                }
             }
         </script>
         <div class="card-body table-responsive">
@@ -295,6 +314,7 @@ alert(data); // show response from the php script.
                         <th>First Name</th>
                         <th>Middle Name</th>
                         <th>Last Name</th>
+                        <th>Gender</th>
                         <th>Role</th>
                         <th>Date Created</th>
                         <th>Date Last Updated</th>
@@ -315,12 +335,13 @@ alert(data); // show response from the php script.
                         <td><?= $result[$i]['first_name'] ?></td>
                         <td><?= $result[$i]['middle_name'] ?></td>
                         <td><?= $result[$i]['last_name'] ?></td>
+                        <td><?= $result[$i]['gender'] ?></td>
                         <td><?= $result[$i]['role'] ?></td>
                         <td><?= $result[$i]['date_created'] ?></td>
                         <td><?= $result[$i]['date_updated'] ?></td>
                         <td><?= $result[$i]['status'] ?></td>
                         <td class="table-action">
-                            <a href="#" data-toggle="modal" data-target="#modalUsers" onclick="showModalUsers('editUsers','<?= $result[$i]['userId'] ?>','<?= $result[$i]['email'] ?>','<?= $result[$i]['lrn'] ?>','<?= $result[$i]['username'] ?>','<?= $result[$i]['first_name'] ?>','<?= $result[$i]['middle_name'] ?>','<?= $result[$i]['last_name'] ?>','<?= $result[$i]['role'] ?>','<?= $result[$i]['status'] ?>')">
+                            <a href="#" data-toggle="modal" data-target="#modalUsers" onclick="showModalUsers('editUsers','<?= $result[$i]['userId'] ?>','<?= $result[$i]['email'] ?>','<?= $result[$i]['lrn'] ?>','<?= $result[$i]['username'] ?>','<?= $result[$i]['first_name'] ?>','<?= $result[$i]['middle_name'] ?>','<?= $result[$i]['last_name'] ?>','<?= $result[$i]['role'] ?>','<?= $result[$i]['status'] ?>','<?= $result[$i]['gender'] ?>')">
                             <i class="fa fa-edit"></i></a>
                             
                         </td>

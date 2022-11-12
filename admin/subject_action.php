@@ -131,7 +131,9 @@ $teacherData=$jpac->SQLQuery("SELECT * FROM user WHERE role='Teacher' and status
     <div class="container-fluid p-0" style="margin:20px;">
     <h1 class="h3 mb-3">Subjects Assign</h1>
 
-<div class="row">
+<div class="row" style="overflow: auto;
+  width: 100%;
+  height: 100%;">
     <div class="card">
         <div class="card-header text-right">
             <button class="btn btn-primary" onclick="showModalData('add')"  data-toggle="modal" data-target="#modalData">Add <i class="align-middle" data-feather="plus-circle"></i> </button>
@@ -292,7 +294,12 @@ $('#classMasterId').val(classMasterId);
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.11.5/datatables.min.css"/>
 <script>
 $(document).ready(function() {
-    $('#usersTable').DataTable();
+    $('#usersTable').DataTable({
+        lengthMenu: [
+            [11, 25, 50, -1],
+            [11, 25, 50, 'All'],
+        ],
+    });
 });
 
 </script>

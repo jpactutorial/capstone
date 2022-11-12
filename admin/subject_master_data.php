@@ -264,7 +264,12 @@ $('#status').val(status);
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.11.5/datatables.min.css"/>
 <script>
 $(document).ready(function() {
-    $('#usersTable').DataTable();
+    $('#usersTable').DataTable({
+        lengthMenu: [
+            [11, 25, 50, -1],
+            [11, 25, 50, 'All'],
+        ],
+    });
 });
 
 </script>
