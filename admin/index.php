@@ -190,6 +190,32 @@ for($i=0;$i<count($data);$i++){
         }]
     },
     options: {
+        scales: {
+          xAxes: [{
+              barPercentage:1,
+              categoryPercentage:0.5,
+              gridLines:{
+                display:false
+              },
+              ticks: {
+                fontColor:"#8f9092"
+              }
+          }],
+          yAxes: [{
+              display: true,
+              scaleLabel: {
+                show: true
+              },
+              gridLines:{
+                color:"#ecedef"
+              },
+              ticks: {
+                beginAtZero:true,
+                stepSize: 1,
+                fontColor:"#8f9092",
+              }
+          }]
+          },
         legend: {display: false},
         title: {
         display: true,
