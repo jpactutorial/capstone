@@ -53,10 +53,10 @@ if($type == "edit"){
 $gradeVal="";
 $sectionVal="";
 if($id==""){	
-	$sqlStudent="SELECT t0.*,IFNULL(t2.grade,'') as grade,IFNULL(t2.section,'') as section from user t0 LEFT JOIN class t1 on t0.userId=t1.studentId LEFT JOIN classes_master_data t2 on t1.classMasterId=t2.classMasterId WHERE role='Student'";
+	$sqlStudent="SELECT t0.*,IFNULL(t2.grade,'') as grade,IFNULL(t2.section,'') as section,t2.classMasterId from user t0 LEFT JOIN class t1 on t0.userId=t1.studentId LEFT JOIN classes_master_data t2 on t1.classMasterId=t2.classMasterId WHERE role='Student'";
 	$studentData=$jpac->SQLQuery($sqlStudent);
 }else{
-	$sqlStudent="SELECT t0.*,IFNULL(t2.grade,'') as grade,IFNULL(t2.section,'') as section from user t0 LEFT JOIN class t1 on t0.userId=t1.studentId LEFT JOIN classes_master_data t2 on t1.classMasterId=t2.classMasterId WHERE role='Student' and t2.classMasterId='".$id."'";
+	$sqlStudent="SELECT t0.*,IFNULL(t2.grade,'') as grade,IFNULL(t2.section,'') as section,t2.classMasterId from user t0 LEFT JOIN class t1 on t0.userId=t1.studentId LEFT JOIN classes_master_data t2 on t1.classMasterId=t2.classMasterId WHERE role='Student' and t2.classMasterId='".$id."'";
 	$studentData=$jpac->SQLQuery($sqlStudent);
 	$gradeVal="( Grade: " .$studentData[0]['grade'];
 	$sectionVal=" Section: ".$studentData[0]['section'] ." ) ";
@@ -171,10 +171,10 @@ $classMasterData=$jpac->SQLQuery("SELECT * FROM classes_master_data GROUP BY gra
                                                 <div class="mb-3 row">
                                                     <label class="col-form-label col-sm-3 text-sm-left">Grade</label>
                                                     <div class="col-sm-9">
-                                                        <select class="form-select" onchange="showSection()" id="grade" name ="grade"value="">
+                                                        <select class="form-select" id="grade" name ="grade"value="">
                                                             <option value=""> - </option>
 															<?php for($i=0;$i<count($classMasterData);$i++){ ?>
-                                                            <option value="<?= $classMasterData[$i]['grade'] ?>"><?= $classMasterData[$i]['grade'] ?></option>
+                                                            <option value="<?= trim($classMasterData[$i]['grade']) ?>"><?= trim($classMasterData[$i]['grade']) ?></option>
 															<?php } ?>
                                                         </select>
                                                     </div>
@@ -206,27 +206,11 @@ $classMasterData=$jpac->SQLQuery("SELECT * FROM classes_master_data GROUP BY gra
 									</div>
 								</div>
 							</div>
+							
+							
 							<script>
-function showSection(){
-	$.ajax({
-		type:"POST",
-		url:window.location,
-		data:{
-			type:"showSectionData",
-			grade:$('#grade').val()
-		},
-		success:function(data){
-			var data=JSON.parse(data);
-			for(i=0;i<data.length;i++){
-				var x = document.getElementById("section");
-				var option = document.createElement("option");
-				option.text = data[i]['section'];
-				option.value= data[i]['classMasterId'];
-				x.add(option);
-			}
-		}
-	});
-}   
+
+
 $("#form_data").submit(function(e) {
 	e.preventDefault(); // avoid to execute the actual submit of the form.
 	var form = $(this);
@@ -255,6 +239,9 @@ function showModalData(action,id=0,grade='',section='',status=''){
     $('#grade').val(grade);
     $('#section').val(section);
     $('#status').val(status);
+	var x = document.getElementById('section');
+	x.value=section;
+
 }
 							</script>
                             <div class="card-body table-responsive">
@@ -285,7 +272,7 @@ function showModalData(action,id=0,grade='',section='',status=''){
 											<td><?= $result[$i]['section'] ?></td>
 											<td><?= $result[$i]['status'] ?></td>
 											<td class="table-action">
-												<a href="#" data-toggle="modal" data-target="#modalData" onclick="showModalData('edit','<?= $result[$i]['userId'] ?>','<?= $result[$i]['grade'] ?>','<?= $result[$i]['section'] ?>','<?= $result[$i]['status'] ?>')">
+												<a href="#" data-toggle="modal" data-target="#modalData" onclick="showModalData('edit','<?= $result[$i]['userId'] ?>','<?= $result[$i]['grade'] ?>','<?= $result[$i]['classMasterId'] ?>','<?= $result[$i]['status'] ?>')">
                                                 <i class="fa fa-edit"></i></a>
 												
 											</td>
