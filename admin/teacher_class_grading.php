@@ -72,7 +72,7 @@ if($type == "getTotalItems"){
 	exit;
 }
 $subjectClassLists=$jpac->SQLQuery("SELECT u.userId,u.first_name,u.middle_name,u.last_name,cmd.grade,cmd.section,c.studentId FROM class c LEFT JOIN classes_master_data cmd on c.classMasterId=cmd.classMasterId LEFT JOIN user u on c.studentId=u.userId WHERE c.classMasterId='".$classMasterId."'");
-$computationMaster=$jpac->SQLQuery("SELECT ci.computationItemsId,ci.description,ci.percentage,ci.total_exams FROM computation_items ci LEFT JOIN subjects_assign sa ON ci.computationMasterId=sa.computationMasterId WHERE sa.teacherId='".$userData[0]['userId']."' and sa.subjectId='".$subjectId."' and sa.classMasterId='".$classMasterId."' ORDER BY ci.percentage ASC");
+$computationMaster=$jpac->SQLQuery("SELECT ci.computationItemsId,ci.description,ci.percentage,ci.total_exams FROM computation_items ci LEFT JOIN subjects_assign sa ON ci.computationMasterId=sa.computationMasterId WHERE sa.teacherId='".$userData[0]['userId']."' and sa.subjectId='".$subjectId."' and sa.classMasterId='".$classMasterId."' ORDER BY ci.datecreated ASC");
 //echo "<pre>".json_encode($computationMaster,JSON_PRETTY_PRINT);
 ?>
 <!doctype html>
