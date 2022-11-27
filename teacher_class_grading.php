@@ -83,7 +83,7 @@ $computationMaster=$jpac->SQLQuery("SELECT ci.computationItemsId,ci.description,
 
 			<main class="content">
 				<div class="container-fluid p-0">
-
+				<?= json_encode($subjectClassLists); ?>
 					<h1 class="h3 mb-3">Grade: <?= $subjectClassLists[0]['grade']." - ".$subjectClassLists[0]['section'] ?> -> Student List(s)</h1>
 
 					<div class="row">
@@ -211,6 +211,7 @@ function showModalData(action,id=0,subjectId='',computationMasterId='',status=''
 											<th>#</th>
 											<th>Total Items</th>
 											<?php
+											/*
 											$data=$computationMaster;
 											$totalItemsArray=[];
 											for($i=0;$i<count($data);$i++){ 
@@ -225,7 +226,7 @@ function showModalData(action,id=0,subjectId='',computationMasterId='',status=''
 															<button onclick="saveTotalItems('.$data[$i]['computationItemsId'].','.$data[$i]['total_exams'].')"class="align-middle mr-2" data-feather="save" style="cursor:pointer">Save</button> 
 														</div>
 														</th>';
-											} ?>
+											} */?>
 											<th>Final</th>
 											<th>Action</th>
                                         </tr>
