@@ -317,14 +317,16 @@ $('#status').val(status);
                         $totalItemsArray=[];
                         $lastColumn=0;
                         for($i=0;$i<count($data);$i++){ 
+                            $totalItems=0;
                             for($n=0;$n<$data[$i]['total_exams'];$n++){ 
                                 $lastColumn++;
                                 $objectName="totalItems_".$data[$i]['computationItemsId'].'_'.$n;
                                 $checkExists=$jpac->SQLQuery("SELECT * FROM class_total_items WHERE classMasterId='".$classMasterId."' and subjectId='".$subjectId."' and quarter='".$quarter."' and columnNumber='".$n."' and computationItemsId='".$data[$i]['computationItemsId']."'");
                                 $totalItemsArray[]=array("computationItemsId"=>$data[$i]['computationItemsId'],"columnNumber"=>$n,"totalItems"=>(count($checkExists)>0 ? (int)$checkExists[0]['totalItems']: 0 ));
+                                $totalItems=$totalItems+(count($checkExists)>0 ? $checkExists[0]['totalItems'] : 0 );
                                 ?>
                             <th><input type="text" oninput="saveTotalItems('<?= $data[$i]['computationItemsId'] ?>','<?= $data[$i]['total_exams'] ?>')" name="<?= $objectName ?>" id="<?= $objectName ?>" value="<?= (count($checkExists)>0 ? $checkExists[0]['totalItems'] : 0 ) ?>" style="width:<?= $thWidth ?>px"></th>
-                        <?php } echo '<th>
+                        <?php } echo '<th>'.$totalItems.'
                                     </th>';
                         } 
                         $lastColumn=($lastColumn+count($data))+1;
@@ -382,26 +384,30 @@ $('#status').val(status);
                         $col=0;
                         $categoryCount=1;
                         $doneSetup=false;
-                        for($z=0;$z<count($data);$z++){ 
+                        for($z=0;$z<count($data);$z++){
+                            $total_exams=$data[$z]['total_exams'];
+                            $col=$col+$total_exams+1;
                             $computationItemsId=$data[$z];
                             $sql="SELECT * FROM class_total_items WHERE computationItemsId='".$computationItemsId['computationItemsId']."' and subjectId='".$subjectId."' ORDER BY classTotalItemsId ASC ";
                             $classData=$jpac->SQLQuery($sql);
                             if(count($classData)==$computationItemsId['total_exams']){$doneSetup=true;}else{$doneSetup=false;}
+                            $TotalScore=0;
                             for($c=0;$c<count($classData);$c++){
                                 $classTotalItemsId=$classData[$c]['classTotalItemsId'];
                                 $sql="SELECT * FROM class_grade WHERE classTotalItemsId='".$classTotalItemsId."' and studentId='".$result[$i]['studentId']."' and classMasterId='".$classMasterId."' and subjectId='".$subjectId."' and quarter='".$_REQUEST['quarter']."'";
-                                //echo $sql;
+                               
                                 $classGrade=$jpac->SQLQuery($sql);
                                 $gradeScore=isset($classGrade[0]['grade_score']) ? $classGrade[0]['grade_score'] : 0 ;
-                               // $$=isset($classData[$c]['grade_score']) ? $classData[$c]['grade_score'] : 0 ;
+                                $TotalScore=$TotalScore+$gradeScore;
                                 if($doneSetup==true){ ?>
-                                    <td><input value="<?= $gradeScore ?>" type=number id="grade_<?= $z."_".$c."_".$result[$i]['studentId'] ?>" oninput="saveData('<?= $classTotalItemsId ?>','<?= $result[$i]['studentId'] ?>','<?= $z ?>','<?= $c ?>')"  style="width:<?= $thWidth ?>px" ></td>
+                                    <td><input value="<?= $gradeScore ?>" type=number id="grade_<?= $z."_".$c."_".$result[$i]['studentId'] ?>" oninput="saveData('<?= $classTotalItemsId ?>','<?= $result[$i]['studentId'] ?>','<?= $z ?>','<?= $c ?>','<?= $col ?>','<?= $total_exams ?>','<?= ($i+1) ?>')"  style="width:<?= $thWidth ?>px" ></td>
                                     <?php
                                 }else{ ?>
                                     <td>Please setup <br/>total Items First!<br/>Then refresh the page.</td>
                                     <?php
                                 }
                             }
+                            echo '<td id="row'.($i+1).'_colTotal'.$col.'">'.$TotalScore.'</td>';
                              /*
                             $categoryCount=($categoryCount+$data[$z]['total_exams']);
                             $totalGetValue=0;
@@ -436,9 +442,8 @@ $('#status').val(status);
                             echo '<td id="row'.($i+1)."_".($categoryCount).'">'.$itemsTotalGrade.'</td>';
                             $categoryCount++;
                             */
-                            echo '<td></td>';
                         } ?>
-                        <td id="row<?= ($i+1)."_".$lastColumn ?>"><?= $finalGrade ?></td>
+                        <td id="row<?= ($z+1)."_col".$col ?>"><?= $finalGrade ?></td>
                         <td>
                             <div class="mb-2">
                                 <!--<button class="btn btn-danger align-middle mr-2"onclick= "saveRow('<?= $result[$i]['studentId'] ?>')" data-feather="save" style="cursor:pointer">Save</button> 
@@ -464,7 +469,11 @@ $('#status').val(status);
 $(document).ready(function() {
    // $('#usersTable').DataTable();
 });
-function saveData(totalItemsId,id,z,c){
+function computeGrade(){
+
+}
+
+function saveData(totalItemsId,id,z,c,colTotal,total_exams,rowNo){
     $.ajax({
         type:"POST",
         url:window.location,
@@ -481,6 +490,15 @@ function saveData(totalItemsId,id,z,c){
             console.log(data);
         }
     });
+
+    var TotalGrade=0;
+    for(i=0;i<total_exams;i++){
+        var dataName="#grade_"+z+"_"+(i)+"_"+id;
+        console.log(dataName);
+        TotalGrade=parseInt(TotalGrade)+parseInt($(dataName).val());
+    }
+    console.log("#row"+rowNo+"_colTotal"+colTotal);
+    $("#row"+rowNo+"_colTotal"+colTotal).html(TotalGrade);
 }
 function autoCompute(row,col,total,totalExams,totalTest,finalColumn){
     var totalGrade=0;
